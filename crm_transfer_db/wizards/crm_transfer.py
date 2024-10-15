@@ -1,7 +1,7 @@
 import base64
 import xmlrpc.client
 from odoo import models, fields, api
-
+_logger = logging.getLogger(__name__)
 
 class CRMTransfer(models.TransientModel):
     _name = 'crm.transfer'
@@ -277,6 +277,7 @@ class CRMTransfer(models.TransientModel):
                 'is_company': partner['is_company'],
             }
             print(vals)
+            _logger.info(vals)
             res = self._insert_if_not_exists_by_name('res.partner', partner['name'], vals)
             self.transfer_message_ids(partner['message_ids'], 'helpdesk.ticket', res.id)
 
@@ -305,6 +306,7 @@ class CRMTransfer(models.TransientModel):
                     'parent_id': parent_id.id if parent_id else False,
                 }
                 print(vals)
+                _logger.info(vals)
                 partner_id.write(vals)
 
         return True
@@ -365,6 +367,7 @@ class CRMTransfer(models.TransientModel):
                 'write_date': lead['write_date'],
             }
             print(vals)
+            _logger.info(vals)
             res = self._insert_if_not_exists_by_name('crm.lead', lead['name'], vals)
             self.transfer_message_ids(lead['message_ids'], 'helpdesk.ticket', res.id)
 
@@ -405,6 +408,7 @@ class CRMTransfer(models.TransientModel):
                 'in_country_name': attendance['in_country_name'],
             }
             print(vals)
+            _logger.info(vals)
             self._insert_direct('hr.attendance', attendance['display_name'], vals)
 
         return True
@@ -460,6 +464,7 @@ class CRMTransfer(models.TransientModel):
                 'active': employee['active'],
             }
             print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('hr.employee', employee['name'], vals)
 
         return True
@@ -505,6 +510,7 @@ class CRMTransfer(models.TransientModel):
                 'allows_negative': hr_leave_type['allows_negative'],
             }
             print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('hr.leave.type', hr_leave_type['name'], vals)
 
         return True
@@ -568,6 +574,7 @@ class CRMTransfer(models.TransientModel):
                     'state': hr_leave['state'],
                 }
                 print(vals)
+                _logger.info(vals)
                 self.env['hr.leave'].with_context(leave_skip_state_check=True, leave_skip_date_check=True).sudo().create(vals)
 
         return True
@@ -606,6 +613,7 @@ class CRMTransfer(models.TransientModel):
                 'use_rating': helpdesk_team['use_rating'],
             }
             print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('helpdesk.team', helpdesk_team['name'], vals)
 
         return True
@@ -646,6 +654,7 @@ class CRMTransfer(models.TransientModel):
                 'legend_done': helpdesk_stage['legend_done'],
             }
             print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('helpdesk.stage', helpdesk_stage['name'], vals)
 
         return True
@@ -710,6 +719,7 @@ class CRMTransfer(models.TransientModel):
                 'description': helpdesk_ticket['description'],
             }
             print(vals)
+            _logger.info(vals)
             res = self._insert_direct('helpdesk.ticket', vals)
             self.transfer_message_ids(helpdesk_ticket['message_ids'], 'helpdesk.ticket', res.id)
             self.transfer_account_analytic_line(helpdesk_ticket['timesheet_ids'], helpdesk_ticket_id=res.id)
@@ -790,6 +800,7 @@ class CRMTransfer(models.TransientModel):
                 'allow_worksheets': project_project['allow_worksheets'],
             }
             print(vals)
+            _logger.info(vals)
             res = self._insert_direct('project.project', vals)
             self.transfer_message_ids(project_project['message_ids'], 'project.project', res.id)
 
@@ -863,6 +874,7 @@ class CRMTransfer(models.TransientModel):
                     'date_last_stage_update': project_task['date_last_stage_update'],
                 }
                 print(vals)
+                _logger.info(vals)
                 res = self._insert_direct('project.task', vals)
                 if project_task['message_ids']:
                     self.transfer_message_ids(project_task['message_ids'], 'project.task', res.id)
@@ -950,7 +962,7 @@ class CRMTransfer(models.TransientModel):
                 'tracking': product_template['tracking'],
                 'description': product_template['description'],
             }
-            print(vals)
+            _logger.info(vals)
             res = self._insert_direct('product.template', vals)
             # Si el producto tiene atributos
             if product_template['attribute_line_ids']:
@@ -1033,7 +1045,7 @@ class CRMTransfer(models.TransientModel):
                 'active': uom_uom['active'],
                 'rounding': uom_uom['rounding'],
             }
-            print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('uom.uom', uom_uom['name'], vals)
 
         return True
@@ -1087,7 +1099,7 @@ class CRMTransfer(models.TransientModel):
                 'social_twitter': website['social_twitter'],
                 'social_youtube': website['social_youtube'],
             }
-            print(vals)
+            _logger.info(vals)
             self._insert_if_not_exists_by_name('website', website['name'], vals)
 
         return True
@@ -1180,7 +1192,7 @@ class CRMTransfer(models.TransientModel):
                 # 'website_url': website_page['website_url'],
                 'write_date': website_page['write_date'],
             }
-            print(vals)
+            _logger.info(vals)
             self._insert_direct('website.page', vals)
 
         return True
@@ -1205,7 +1217,7 @@ class CRMTransfer(models.TransientModel):
                 'subtitle': blog['name'],
                 'website_id': website_id.id if website_id else False,
             }
-            print(vals)
+            _logger.info(vals)
             res = self._insert_if_not_exists_by_name('blog.blog', blog['name'], vals)
             self.transfer_message_ids(blog['message_ids'], 'blog.blog', res.id)
 
@@ -1269,7 +1281,7 @@ class CRMTransfer(models.TransientModel):
                 'website_url': blog_post['website_url'],
                 'write_date': blog_post['write_date'],
             }
-            print(vals)
+            _logger.info(vals)
             res = self._insert_if_not_exists_by_name('blog.post', blog_post['name'], vals)
             self.transfer_message_ids(blog_post['message_ids'], 'blog.post', res.id)
         return True
@@ -1325,7 +1337,7 @@ class CRMTransfer(models.TransientModel):
                 'message_id': message['message_id'],
                 'body': message['body'],
             }
-            print(vals)
+            _logger.info(vals)
             new_message_id = self._insert_direct('mail.message', vals)
             if new_message_id and message['attachment_ids']:
                 message_attachments = []
@@ -1373,6 +1385,6 @@ class CRMTransfer(models.TransientModel):
                 'unit_amount': account_analytic_line['unit_amount'],
                 'name': account_analytic_line['name'],
             }
-            print(vals)
+            _logger.info(vals)
             self._insert_direct('account.analytic.line', vals)
         return True
