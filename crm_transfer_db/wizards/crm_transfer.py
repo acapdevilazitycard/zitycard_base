@@ -31,12 +31,12 @@ class CRMTransfer(models.TransientModel):
         record_exists = self._record_exists_by_name(table, name)
 
         if not record_exists:
-            return self.env[table].create(vals)
+            return self.env[table].sudo().create(vals)
         return record_exists
 
     def _insert_direct(self, table, vals):
         """Inserta un registro si no existe en la base de datos destino usando el nombre."""
-        return self.env[table].create(vals)
+        return self.env[table].sudo().create(vals)
 
     def _get_or_create_user(self, user_name):
         """Busca el usuario por nombre; si no existe, crea un contacto y un usuario asociado."""
@@ -52,7 +52,7 @@ class CRMTransfer(models.TransientModel):
                 'login': user_name,  # Ajustar el campo login según necesidad
                 'partner_id': partner.id,
             }
-            user = self.env['res.users'].create(user_vals)
+            user = self.env['res.users'].sudo().create(user_vals)
         return user
 
     def _get_or_create_categories(self, category_names):
@@ -61,7 +61,7 @@ class CRMTransfer(models.TransientModel):
         for category_name in category_names:
             category = self._record_exists_by_name('res.partner.category', category_name)
             if not category:
-                category = self.env['res.partner.category'].create({'name': category_name})
+                category = self.env['res.partner.category'].sudo().create({'name': category_name})
             category_ids.append(category.id)
         return category_ids
 
@@ -71,7 +71,7 @@ class CRMTransfer(models.TransientModel):
         for employee_id in employees:
             employee = self._record_exists_by_name('hr.employee', employee_id)
             if not employee:
-                employee = self.env['hr.employee'].create({'name': employee_id})
+                employee = self.env['hr.employee'].sudo().create({'name': employee_id})
             employee_ids.append(employee.id)
         return employee_ids
 
@@ -81,7 +81,7 @@ class CRMTransfer(models.TransientModel):
         for team_name in teams_names:
             team = self._record_exists_by_name('helpdesk.team', team_name)
             if not team:
-                team = self.env['helpdesk.team'].create({'name': team_name})
+                team = self.env['helpdesk.team'].sudo().create({'name': team_name})
             team_ids.append(team.id)
         return team_ids
 
@@ -91,7 +91,7 @@ class CRMTransfer(models.TransientModel):
         for tag_name in tag_names:
             team = self._record_exists_by_name('helpdesk.tag', tag_name)
             if not team:
-                team = self.env['helpdesk.tag'].create({'name': tag_name})
+                team = self.env['helpdesk.tag'].sudo().create({'name': tag_name})
             tag_ids.append(team.id)
         return tag_ids
 
@@ -109,7 +109,7 @@ class CRMTransfer(models.TransientModel):
                     create_vals = {}
                     for val in vals:
                         create_vals[val] = res_ids[0][val]
-                res_add = self.env[model].create(create_vals)
+                res_add = self.env[model].sudo().create(create_vals)
             tag_ids.append(res_add.id)
         return tag_ids
 
@@ -119,7 +119,7 @@ class CRMTransfer(models.TransientModel):
         for category_name in category_names:
             category = self._record_exists_by_name('hr.employee.category', category_name)
             if not category:
-                category = self.env['hr.employee.category'].create({'name': category_name})
+                category = self.env['hr.employee.category'].sudo().create({'name': category_name})
             category_ids.append(category.id)
         return category_ids
 
@@ -128,7 +128,7 @@ class CRMTransfer(models.TransientModel):
         team = self._record_exists_by_name('crm.team', team_name)
         if not team:
             team_vals = {'name': team_name}
-            team = self.env['crm.team'].create(team_vals)
+            team = self.env['crm.team'].sudo().create(team_vals)
         return team
 
     def _get_or_create_stage(self, stage_name):
@@ -136,7 +136,7 @@ class CRMTransfer(models.TransientModel):
         stage = self._record_exists_by_name('crm.stage', stage_name)
         if not stage:
             stage_vals = {'name': stage_name}
-            stage = self.env['crm.stage'].create(stage_vals)
+            stage = self.env['crm.stage'].sudo().create(stage_vals)
         return stage
 
     def _get_or_create_partner(self, partner_name):
@@ -144,7 +144,7 @@ class CRMTransfer(models.TransientModel):
         partner = self._record_exists_by_name('res.partner', partner_name)
         if not partner:
             partner_vals = {'name': partner_name}
-            partner = self.env['res.partner'].create(partner_vals)
+            partner = self.env['res.partner'].sudo().create(partner_vals)
         return partner
 
     def _get_or_create_stage_id(self, stage_name):
@@ -152,7 +152,7 @@ class CRMTransfer(models.TransientModel):
         stage = self._record_exists_by_name('helpdesk.stage', stage_name)
         if not stage:
             stage_vals = {'name': stage_name}
-            stage = self.env['helpdesk.stage'].create(stage_vals)
+            stage = self.env['helpdesk.stage'].sudo().create(stage_vals)
         return stage
 
     def _get_or_create_source(self, source_name):
@@ -160,21 +160,21 @@ class CRMTransfer(models.TransientModel):
         source = self._record_exists_by_name('res.partner', source_name)
         if not source:
             source_vals = {'name': source_name}
-            source = self.env['utm.source'].create(source_vals)
+            source = self.env['utm.source'].sudo().create(source_vals)
         return source
 
     def _get_or_create_department(self, department_name):
         """Busca o crea un departamento por nombre."""
         department = self._record_exists_by_name('hr.department', department_name)
         if not department:
-            department = self.env['hr.department'].create({'name': department_name})
+            department = self.env['hr.department'].sudo().create({'name': department_name})
         return department
 
     def _get_or_create_helpdesk_team(self, helpdesk_team_name):
         """Busca o crea un departamento por nombre."""
         team = self._record_exists_by_name('helpdesk.team', helpdesk_team_name)
         if not team:
-            team = self.env['helpdesk.team'].create({'name': helpdesk_team_name})
+            team = self.env['helpdesk.team'].sudo().create({'name': helpdesk_team_name})
         return team
 
     def _get_or_create_many2one(self, model, res_id, vals=False):
@@ -190,18 +190,18 @@ class CRMTransfer(models.TransientModel):
                     create_vals = {}
                     for val in vals:
                         create_vals[val] = res_ids[0][val]
-                    res = self.env[model].create(create_vals)
+                    res = self.env[model].sudo().create(create_vals)
                 else:
-                    res = self.env[model].create({'name': res_id[1]})
+                    res = self.env[model].sudo().create({'name': res_id[1]})
             else:
-                res = self.env[model].create({'name': res_id[1]})
+                res = self.env[model].sudo().create({'name': res_id[1]})
         return res
 
     def _get_or_create_job_position(self, job_name):
         """Busca o crea un puesto de trabajo por nombre."""
         job_position = self._record_exists_by_name('hr.job', job_name)
         if not job_position:
-            job_position = self.env['hr.job'].create({'name': job_name})
+            job_position = self.env['hr.job'].sudo().create({'name': job_name})
         return job_position
 
     def _get_or_create_employee(self, employee_name):
@@ -209,7 +209,7 @@ class CRMTransfer(models.TransientModel):
         employee = self._record_exists_by_name('hr.employee', employee_name)
         if not employee:
             employee_vals = {'name': employee_name}
-            employee = self.env['hr.employee'].create(employee_vals)
+            employee = self.env['hr.employee'].sudo().create(employee_vals)
         return employee
 
     def _get_or_create_holiday_status_id(self, hr_leave_type_name):
@@ -217,7 +217,7 @@ class CRMTransfer(models.TransientModel):
         hr_leave_type = self._record_exists_by_name('hr.leave.type', hr_leave_type_name)
         if not hr_leave_type:
             hr_leave_type_vals = {'name': hr_leave_type_name}
-            hr_leave_type = self.env['hr.employee'].create(hr_leave_type_vals)
+            hr_leave_type = self.env['hr.employee'].sudo().create(hr_leave_type_vals)
         return hr_leave_type
 
     def transfer_data_res_partner(self):
@@ -568,7 +568,7 @@ class CRMTransfer(models.TransientModel):
                     'state': hr_leave['state'],
                 }
                 print(vals)
-                self.env['hr.leave'].with_context(leave_skip_state_check=True, leave_skip_date_check=True).create(vals)
+                self.env['hr.leave'].with_context(leave_skip_state_check=True, leave_skip_date_check=True).sudo().create(vals)
 
         return True
 
@@ -963,14 +963,14 @@ class CRMTransfer(models.TransientModel):
                     local_attribute = self.env['product.attribute'].search([('name', '=', attribute_vals['name'])],
                                                                            limit=1)
                     if not local_attribute:
-                        local_attribute = self.env['product.attribute'].create({'name': attribute_vals['name']})
+                        local_attribute = self.env['product.attribute'].sudo().create({'name': attribute_vals['name']})
 
                     # Crear los valores de atributo si no existen
                     local_value = self.env['product.attribute.value'].search(
                         [('name', '=', attribute_vals['value_name']), ('attribute_id', '=', local_attribute.id)],
                         limit=1)
                     if not local_value:
-                        local_value = self.env['product.attribute.value'].create({
+                        local_value = self.env['product.attribute.value'].sudo().create({
                             'name': attribute_vals['value_name'],
                             'attribute_id': local_attribute.id
                         })
@@ -1339,7 +1339,7 @@ class CRMTransfer(models.TransientModel):
                         'res_id': res_id,  # El ID del registro en la segunda base de datos
                         'mimetype': attachment['mimetype'],
                     }
-                    new_attachment_id = self.env['ir.attachment'].create(attachment_data)
+                    new_attachment_id = self.env['ir.attachment'].sudo().create(attachment_data)
                     message_attachments.append(new_attachment_id.id)
                 if message_attachments:
                     new_message_id.attachment_ids = [(6, 0, message_attachments)]
