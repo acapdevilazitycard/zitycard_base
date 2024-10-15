@@ -840,6 +840,7 @@ class CRMTransfer(models.TransientModel):
                                                       'date_assign',
                                                       'date_last_stage_update',
                                                       'message_ids',
+                                                      'timesheet_ids',
                                                   ]})
             for project_task in project_task_ids:
                 project = self._get_or_create_many2one('project.project', project_task['project_id']) if project_task[
@@ -880,7 +881,7 @@ class CRMTransfer(models.TransientModel):
                 res = self._insert_direct('project.task', vals)
                 if project_task['message_ids']:
                     self.transfer_message_ids(project_task['message_ids'], 'project.task', res.id)
-                self.transfer_account_analytic_line(project_project['timesheet_ids'], project_id=project.id, task_id=res.id)
+                self.transfer_account_analytic_line(project_task['timesheet_ids'], project_id=project.id, task_id=res.id)
 
         return True
 
