@@ -1,6 +1,8 @@
 import base64
 import xmlrpc.client
 from odoo import models, fields, api
+
+import logging
 _logger = logging.getLogger(__name__)
 
 class CRMTransfer(models.TransientModel):
