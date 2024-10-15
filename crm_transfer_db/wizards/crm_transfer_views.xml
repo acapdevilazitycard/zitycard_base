@@ -1,0 +1,109 @@
+<odoo>
+    <data>
+        <!-- Acción -->
+        <record id="action_crm_transfer" model="ir.actions.act_window">
+            <field name="name">CRM Transfer</field>
+            <field name="res_model">crm.transfer</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menú -->
+        <menuitem id="menu_crm_transfer_root" name="CRM Transfer"/>
+        <menuitem id="menu_crm_transfer" name="Transferir CRM" parent="menu_crm_transfer_root"
+                  action="action_crm_transfer"/>
+
+        <!-- Vista de formulario -->
+        <record id="view_crm_transfer_form" model="ir.ui.view">
+            <field name="name">crm.transfer.form</field>
+            <field name="model">crm.transfer</field>
+            <field name="arch" type="xml">
+                <form string="Transferir CRM">
+                    <group>
+                        <group>
+                            <field name="source_db"/>
+                            <field name="source_host_db"/>
+                        </group>
+                        <group>
+                            <field name="source_user"/>
+                            <field name="source_password" password="True"/>
+                        </group>
+                    </group>
+                    <group string="Contactos">
+                        <group>
+                            <button string="Contactos" type="object" name="transfer_data_res_partner" class="btn-primary"/>
+                            <button string="Actualizar Padres" type="object" name="transfer_data_update_res_partner" class="btn-primary"/>
+                        </group>
+                        <group>
+                            <button string="Empleados" type="object" name="transfer_data_employee" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="CRM">
+                        <group>
+                            <button string="CRM" type="object" name="transfer_data_crm" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="Asisencias y ausencias">
+                        <group>
+                            <button string="Asistencias" type="object" name="transfer_data_attendance" class="btn-primary"/>
+                            <button string="Tipos de Ausencias" type="object" name="transfer_data_hr_leave_type" class="btn-primary"/>
+                        </group>
+                        <group>
+                            <button string="Ausencias" type="object" name="transfer_data_hr_leave" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="Helpdesk">
+                        <group>
+                            <button string="Equipos" type="object" name="transfer_data_helpdesk_team" class="btn-primary"/>
+                            <button string="Estado" type="object" name="transfer_data_helpdesk_stage" class="btn-primary"/>
+                        </group>
+                        <group>
+                            <button string="Tickets" type="object" name="transfer_data_helpdesk_ticket" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="Proyectos">
+                        <group>
+                            <button string="Proyectos" type="object" name="transfer_data_project_project" class="btn-primary"/>
+                        </group>
+                        <group>
+                            <button string="Tareas" type="object" name="transfer_data_project_task" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="Productos">
+                        <group>
+                            <button string="Productos" type="object" name="transfer_data_product_templates" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group string="Website">
+                        <group>
+                            <button string="Website" type="object" name="transfer_data_website" class="btn-primary"/>
+                        </group>
+                        <group>
+                            <button string="Blog" type="object" name="transfer_data_blog_post" class="btn-primary"/>
+                            <button string="Pages" type="object" name="transfer_data_website_pages" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+<!--        <menuitem id="menu_crm_transfer_root" name="CRM Transfer" parent="crm.crm_menu_root"/>-->
+
+<!--        <menuitem id="menu_crm_transfer_wizard"-->
+<!--                  name="Transferir CRM"-->
+<!--                  parent="menu_crm_transfer_root"-->
+<!--                  action="action_crm_transfer"/>-->
+
+<!--        &lt;!&ndash; Acción para abrir el wizard &ndash;&gt;-->
+<!--        <record id="action_crm_transfer" model="ir.actions.act_window">-->
+<!--            <field name="name">Transferir CRM</field>-->
+<!--            <field name="res_model">crm.transfer</field>-->
+<!--            <field name="view_mode">form</field>-->
+<!--            <field name="target">new</field>-->
+<!--        </record>-->
+
+
+    </data>
+</odoo>
