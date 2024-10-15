@@ -409,7 +409,7 @@ class CRMTransfer(models.TransientModel):
             }
             print(vals)
             _logger.info(vals)
-            self._insert_direct('hr.attendance', attendance['display_name'], vals)
+            self._insert_direct('hr.attendance', vals)
 
         return True
 
