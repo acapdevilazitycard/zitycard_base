@@ -1050,6 +1050,7 @@ class CRMTransfer(models.TransientModel):
             ]})
 
         for uom_uom in uom_uom_ids:
+            categ_existente =  self._record_exists_by_name('uom.category', uom_uom['category_id'][1])
             category_id = self._get_or_create_many2one('uom.category', uom_uom['category_id']) if uom_uom[
                 'category_id'] else False
 
@@ -1064,6 +1065,8 @@ class CRMTransfer(models.TransientModel):
             }
             if vals['uom_type'] == 'reference':
                 vals['uom_type'] = 'bigger'
+            if not categ_existente:
+                vals['uom_type'] = 'reference'
             _logger.info(vals)
             self._insert_if_not_exists_by_name('uom.uom', uom_uom['name'], vals)
 
