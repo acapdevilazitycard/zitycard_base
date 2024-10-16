@@ -1061,6 +1061,7 @@ class CRMTransfer(models.TransientModel):
                 'factor': uom_uom['factor'],
                 'active': uom_uom['active'],
                 'rounding': uom_uom['rounding'],
+                'reference': False,
             }
             _logger.info(vals)
             self._insert_if_not_exists_by_name('uom.uom', uom_uom['name'], vals)
