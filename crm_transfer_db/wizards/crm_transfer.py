@@ -1196,7 +1196,7 @@ class CRMTransfer(models.TransientModel):
                 'seo_name': website_page['seo_name'],
                 'track': website_page['track'],
                 'type': website_page['type'],
-                'url': website_page['url'],
+                # 'url': website_page['url'],
                 'view_id': view_id.id if view_id else False,
                 'visibility': website_page['visibility'],
                 'website_id': website_id.id if website_id else False,
@@ -1206,7 +1206,7 @@ class CRMTransfer(models.TransientModel):
                 'website_meta_og_img': website_page['website_meta_og_img'],
                 'website_meta_title': website_page['website_meta_title'],
                 'website_published': website_page['website_published'],
-                # 'website_url': website_page['website_url'],
+                'website_url': website_page['website_url'],
                 'write_date': website_page['write_date'],
             }
             _logger.info(vals)
