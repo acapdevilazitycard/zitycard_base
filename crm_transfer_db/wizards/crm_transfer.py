@@ -24,9 +24,19 @@ class CRMTransfer(models.TransientModel):
         common, _ = self._get_source_connection()
         return common.authenticate(self.source_db, self.source_user, self.source_password, {})
 
+    def get_domain(self, res_id, domain):
+        domain = []
+        for field in domain:
+            domain.append((field[0], field[1], res_id[field[0]]))
+        return domain
+
     def _record_exists_by_name(self, table, name):
         """Comprueba si un registro ya existe en la base de datos de destino utilizando el nombre."""
         return self.env[table].with_context(lang='en_US').search([('name', '=', name)], limit=1)
+
+    def _record_exists_by_domain(self, table, domain):
+        """Comprueba si un registro ya existe en la base de datos de destino utilizando el nombre."""
+        return self.env[table].with_context(lang='en_US').search(domain, limit=1)
 
     def _insert_if_not_exists_by_name(self, table, name, vals):
         """Inserta un registro si no existe en la base de datos destino usando el nombre."""
@@ -97,11 +107,15 @@ class CRMTransfer(models.TransientModel):
             tag_ids.append(team.id)
         return tag_ids
 
-    def _get_m2m(self, model, res_ids, vals):
+    def _get_m2m(self, model, res_ids, vals, domain=False):
         """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
         tag_ids = []
         for res_id in res_ids:
-            res_add = self._record_exists_by_name(model, res_id['name'])
+            if domain:
+                search_domain = self.get_domain(res_id, domain)
+                res_add = self._record_exists_by_domain(model, search_domain)
+            else:
+                res_add = self._record_exists_by_name(model, res_id['name'])
             if not res_add:
                 if vals:
                     uid = self._get_uid()
@@ -859,8 +873,8 @@ class CRMTransfer(models.TransientModel):
                 if project_task['user_ids']:
                     user_ids = obj.execute_kw(self.source_db, uid, self.source_password,
                                               'res.users', 'search_read', [[['id', 'in', project_task['user_ids']]]],
-                                              {'fields': ['name']})
-                    user_ids = self._get_m2m('res.users', user_ids, ['name', 'login'])
+                                              {'fields': ['name', 'login']})
+                    user_ids = self._get_m2m('res.users', user_ids, ['name', 'login'], [['login', 'ilike']])
 
                 vals = {
                     'name': project_task['name'],
