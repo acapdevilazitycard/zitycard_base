@@ -103,7 +103,7 @@ class CRMTransfer(models.TransientModel):
         for tag_id in tag_ids:
             team = self._record_exists_by_name('crm.tag', tag_id)
             if not team:
-                team = self.env['helpdesk.team'].sudo().create({'name': tag_id})
+                team = self.env['crm.tag'].sudo().create({'name': tag_id})
             tags.append(team.id)
         return tags
 
