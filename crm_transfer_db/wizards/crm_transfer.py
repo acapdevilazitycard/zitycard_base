@@ -376,7 +376,7 @@ class CRMTransfer(models.TransientModel):
             tag_ids = []
             if lead['tag_ids']:
                 tag_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                          'crm_tag', 'search_read', [[['id', 'in', lead['tag_ids']]]],
+                                          'crm.tag', 'search_read', [[['id', 'in', lead['tag_ids']]]],
                                           {'fields': ['name']})
                 tag_ids = [cat['name'] for cat in tag_ids] if tag_ids else []
                 tag_ids = self._get_tag_ids(tag_ids)
