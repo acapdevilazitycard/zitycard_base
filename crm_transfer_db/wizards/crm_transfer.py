@@ -97,6 +97,16 @@ class CRMTransfer(models.TransientModel):
             team_ids.append(team.id)
         return team_ids
 
+    def _get_tag_ids(self, tag_ids):
+        """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
+        tag_ids = []
+        for tag_id in tag_ids:
+            team = self._record_exists_by_name('crm.tag', tag_id)
+            if not team:
+                team = self.env['helpdesk.team'].sudo().create({'name': tag_id})
+            tag_id.append(team.id)
+        return tag_id
+
     def _get_helpdesk_tag_ids(self, tag_names):
         """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
         tag_ids = []
@@ -340,7 +350,7 @@ class CRMTransfer(models.TransientModel):
                                {'fields': ['id', 'name', 'active', 'type', 'partner_id', 'user_id', 'probability',
                                            'priority', 'stage_id', 'team_id', 'expected_revenue', 'date_deadline',
                                            'city', 'country_id', 'source_id', 'description', 'create_date',
-                                           'write_date', 'message_ids']})
+                                           'write_date', 'tag_ids', 'message_ids']})
 
         for lead in leads:
             # Buscar o crear el usuario asociado
@@ -356,15 +366,24 @@ class CRMTransfer(models.TransientModel):
             stage = self._get_or_create_stage(stage_id) if stage_id else False
 
             # Buscar o crear el contacto (partner_id)
-            partner_id = lead['stage_id'] and lead['stage_id'][1]
+            partner_id = lead['partner_id'] and lead['partner_id'][1]
             partner = self._get_or_create_partner(partner_id) if partner_id else False
 
             # Buscar o crear el origen (source_id)
             source_id = lead['source_id'] and lead['source_id'][1]
             source = self._get_or_create_source(source_id) if source_id else False
 
+            tag_ids = []
+            if lead['tag_ids']:
+                tag_ids = obj.execute_kw(self.source_db, uid, self.source_password,
+                                          'crm_tag', 'search_read', [[['id', 'in', lead['tag_ids']]]],
+                                          {'fields': ['name']})
+                tag_ids = [cat['name'] for cat in tag_ids] if tag_ids else []
+                tag_ids = self._get_tag_ids(tag_ids)
+
             vals = {
                 'name': lead['name'],
+                'tag_ids': [(6, 0, tag_ids)] if tag_ids else False,
                 'active': lead['active'],
                 'type': lead['type'],
                 'partner_id': partner.id if partner else False,  # Vincular con el contacto
@@ -855,12 +874,15 @@ class CRMTransfer(models.TransientModel):
                                                       'date_last_stage_update',
                                                       'message_ids',
                                                       'timesheet_ids',
+                                                      'stage_id',
                                                   ]})
             for project_task in project_task_ids:
                 project = self._get_or_create_many2one('project.project', project_task['project_id']) if project_task[
                     'project_id'] else False
                 partner = self._get_or_create_many2one('res.partner', project_task['partner_id']) if project_task[
                     'partner_id'] else False
+                stage_id = self._get_or_create_many2one('project.task.type', project_task['stage_id']) if project_task[
+                    'stage_id'] else False
 
                 tag_ids = []
                 if project_task['tag_ids']:
@@ -880,6 +902,7 @@ class CRMTransfer(models.TransientModel):
                     'name': project_task['name'],
                     'project_id': project.id if project else False,
                     'partner_id': partner.id if partner else False,
+                    'stage_id': stage_id.id if stage_id else False,
                     'allocated_hours': project_task['allocated_hours'],
                     'user_ids': [(6, 0, user_ids)] if user_ids else False,
                     'tag_ids': [(6, 0, tag_ids)] if tag_ids else False,
