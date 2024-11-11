@@ -99,13 +99,13 @@ class CRMTransfer(models.TransientModel):
 
     def _get_tag_ids(self, tag_ids):
         """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
-        tag_ids = []
+        tags = []
         for tag_id in tag_ids:
             team = self._record_exists_by_name('crm.tag', tag_id)
             if not team:
                 team = self.env['helpdesk.team'].sudo().create({'name': tag_id})
-            tag_id.append(team.id)
-        return tag_id
+            tags.append(team.id)
+        return tags
 
     def _get_helpdesk_tag_ids(self, tag_names):
         """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
