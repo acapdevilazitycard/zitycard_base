@@ -1355,7 +1355,8 @@ class CRMTransfer(models.TransientModel):
                                       'message_id',
                                       'body',
                                       'attachment_ids',
-                                  ]})
+                                  ],
+        'order': 'date desc'})
 
         for message in messages:
             # Buscar o crear el departamento asociado
