@@ -1355,8 +1355,8 @@ class CRMTransfer(models.TransientModel):
                                       'message_id',
                                       'body',
                                       'attachment_ids',
-                                  ],
-        'order': 'date desc'})
+                                  ]})
+        messages = sorted(messages, key=lambda x: x['date'], reverse=True)
 
         for message in messages:
             # Buscar o crear el departamento asociado
