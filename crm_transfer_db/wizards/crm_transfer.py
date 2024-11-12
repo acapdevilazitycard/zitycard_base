@@ -344,7 +344,7 @@ class CRMTransfer(models.TransientModel):
 
         # Transferir oportunidades (crm.lead)
         lead_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                  'crm.lead', 'search', [[]])
+                                  'crm.lead', 'search', [[['name', '=', 'SORILUX - Odoo']]])
         leads = obj.execute_kw(self.source_db, uid, self.source_password,
                                'crm.lead', 'read', [lead_ids],
                                {'fields': ['id', 'name', 'active', 'type', 'partner_id', 'user_id', 'probability',
@@ -404,7 +404,7 @@ class CRMTransfer(models.TransientModel):
             print(vals)
             _logger.info(vals)
             res = self._insert_if_not_exists_by_name('crm.lead', lead['name'], vals)
-            self.transfer_message_ids(lead['message_ids'], 'helpdesk.ticket', res.id)
+            self.transfer_message_ids(lead['message_ids'], 'crm.lead', res.id)
 
         return True
 
