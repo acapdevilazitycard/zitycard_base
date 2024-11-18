@@ -328,7 +328,7 @@ class CRMTransfer(models.TransientModel):
         #                           'res.partner', 'read', [partner_ids],
         #                           {'fields': ['id', 'name', 'parent_id']})
         partners = obj.execute_kw(self.source_db, uid, self.source_password,
-                                  'res.partner', 'read', [[7682, 7683, 9250]],
+                                  'res.partner', 'read', [[7682, 7683]],
                                   {'fields': ['id', 'name', 'parent_id']})
 
         for partner in partners:
