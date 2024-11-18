@@ -252,10 +252,17 @@ class CRMTransfer(models.TransientModel):
         _, obj = self._get_source_connection()
 
         # Transferir contactos (res.partner)
-        partner_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                     'res.partner', 'search', [[]])
+        # partner_ids = obj.execute_kw(self.source_db, uid, self.source_password,
+        #                              'res.partner', 'search', [[]])
+        # partners = obj.execute_kw(self.source_db, uid, self.source_password,
+        #                           'res.partner', 'read', [partner_ids],
+        #                           {'fields': ['id', 'name', 'type', 'company_id', 'email', 'phone', 'street', 'street2',
+        #                                       'city', 'state_id', 'zip', 'country_id', 'function', 'comment',
+        #                                       'website', 'category_id', 'user_id', 'active', 'create_date',
+        #                                       'write_date', 'vat', 'credit_limit', 'debit_limit', 'currency_id',
+        #                                       'is_company', 'type', 'message_ids']})
         partners = obj.execute_kw(self.source_db, uid, self.source_password,
-                                  'res.partner', 'read', [partner_ids],
+                                  'res.partner', 'read', [[7621, 7682, 7683, 9250]],
                                   {'fields': ['id', 'name', 'type', 'company_id', 'email', 'phone', 'street', 'street2',
                                               'city', 'state_id', 'zip', 'country_id', 'function', 'comment',
                                               'website', 'category_id', 'user_id', 'active', 'create_date',
@@ -315,10 +322,13 @@ class CRMTransfer(models.TransientModel):
         _, obj = self._get_source_connection()
 
         # Transferir contactos (res.partner)
-        partner_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                     'res.partner', 'search', [[['parent_id', '!=', False]]])
+        # partner_ids = obj.execute_kw(self.source_db, uid, self.source_password,
+        #                              'res.partner', 'search', [[['parent_id', '!=', False]]])
+        # partners = obj.execute_kw(self.source_db, uid, self.source_password,
+        #                           'res.partner', 'read', [partner_ids],
+        #                           {'fields': ['id', 'name', 'parent_id']})
         partners = obj.execute_kw(self.source_db, uid, self.source_password,
-                                  'res.partner', 'read', [partner_ids],
+                                  'res.partner', 'read', [[7621, 7682, 7683, 9250]],
                                   {'fields': ['id', 'name', 'parent_id']})
 
         for partner in partners:
