@@ -68,6 +68,9 @@
                         <group>
                             <button string="Tareas" type="object" name="transfer_data_project_task" class="btn-primary"/>
                         </group>
+                        <group>
+                            <button string="Actualizar usuarios tareas" type="object" name="transfer_data_update_task_user" class="btn-primary"/>
+                        </group>
                     </group>
                     <group string="Productos">
                         <group>

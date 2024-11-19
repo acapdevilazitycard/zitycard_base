@@ -10,9 +10,9 @@ class CRMTransfer(models.TransientModel):
     _description = 'Transferir datos de CRM entre bases de datos con verificación de duplicados y tablas intermedias'
 
     source_db = fields.Char(string='Base de Datos Origen', required=True, default='Zitycard')
-    source_host_db = fields.Char(string='Host Base de Datos Origen', required=True, default='https://zitycard.com')
+    source_host_db = fields.Char(string='Host Base de Datos Origen', required=True, default='https://zitycard.odoo-pro.zitycard.com')
     source_user = fields.Char(string='Usuario BD Origen Destino', required=True, default='acapdevila@zitycard.com')
-    source_password = fields.Char(string='Contraseña BD Origen', required=True, default='Mercecayuela95')
+    source_password = fields.Char(string='Contraseña BD Origen', required=True, default='')
 
     def _get_source_connection(self):
         """Crea una conexión a la base de datos de origen utilizando la API de Odoo."""
@@ -345,6 +345,69 @@ class CRMTransfer(models.TransientModel):
                 _logger.info(vals)
                 partner_id.write(vals)
 
+        return True
+# 138.201.244.76
+    def transfer_data_update_task_user(self):
+        uid = self._get_uid()
+        _, obj = self._get_source_connection()
+
+        project_task_ids = self.env['project.task'].search([('user_ids', 'in', [30])])
+        project_project_ids = project_task_ids.mapped('project_id')
+
+        for project_project_id in project_project_ids:
+            _logger.info('Project: %s' % project_project_id.name)
+            old_project_id = obj.execute_kw(self.source_db, uid, self.source_password, 'project.project', 'search',
+                                            [[['name', '=', project_project_id.name]]])
+            if old_project_id:
+                for project_task_id in project_task_ids.filtered(lambda l: l.project_id == project_project_id):
+                    project_task_old_ids = obj.execute_kw(self.source_db, uid, self.source_password, 'project.task', 'search_read', [[('project_id', '=', old_project_id[0]), ('name', '=', project_task_id.name)]],
+                                                     {'fields': ['name', 'user_ids']})
+                    for project_task_old_id in project_task_old_ids:
+                        usuarios_tarea = []
+                        for user_id in project_task_old_id['user_ids']:
+                            if user_id == 11: # Alba
+                                usuarios_tarea.append(30)
+                            elif user_id == 38: # Aleix
+                                usuarios_tarea.append(43)
+                            elif user_id == 30: # Alejandro
+                                usuarios_tarea.append(25)
+                            elif user_id == 74: # Toni
+                                usuarios_tarea.append(42)
+                            elif user_id == 25: # Exe
+                                usuarios_tarea.append(19)
+                            elif user_id == 12: # Francisco
+                                usuarios_tarea.append(38)
+                            elif user_id == 1092: # Gonzalo
+                                usuarios_tarea.append(45)
+                            elif user_id == 2: # Jaime
+                                usuarios_tarea.append(5)
+                            elif user_id == 29: # Javier
+                                usuarios_tarea.append(13)
+                            elif user_id == 34: # Joan
+                                usuarios_tarea.append(31)
+                            elif user_id == 39: # Jorge
+                                usuarios_tarea.append(32)
+                            elif user_id == 41: # Maykel
+                                usuarios_tarea.append(41)
+                            elif user_id == 729: # Nicolás
+                                usuarios_tarea.append(46)
+                            elif user_id == 35: # Pablo
+                                usuarios_tarea.append(40)
+                            elif user_id == 7: # Pilar
+                                usuarios_tarea.append(7)
+                            elif user_id == 6: # Rebeca
+                                usuarios_tarea.append(22)
+                            elif user_id == 32: # Roberto
+                                usuarios_tarea.append(21)
+                            elif user_id == 33: # Rubén
+                                usuarios_tarea.append(12)
+                            elif user_id == 9: # Santi
+                                usuarios_tarea.append(2)
+                            elif user_id == 31: # Valentín
+                                usuarios_tarea.append(37)
+                        project_task_id.user_ids = [(6, 0, usuarios_tarea)] if usuarios_tarea else []
+                        _logger.info('Task: %s' % project_task_id.name)
+                        _logger.info(usuarios_tarea)
         return True
 
     def transfer_data_crm(self):
