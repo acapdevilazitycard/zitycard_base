@@ -354,7 +354,7 @@ class CRMTransfer(models.TransientModel):
 
         # Transferir oportunidades (crm.lead)
         lead_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                  'crm.lead', 'search', [[['name', '=', 'SORILUX - Odoo']]])
+                                  'crm.lead', 'search', [[]])
         leads = obj.execute_kw(self.source_db, uid, self.source_password,
                                'crm.lead', 'read', [lead_ids],
                                {'fields': ['id', 'name', 'active', 'type', 'partner_id', 'user_id', 'probability',
