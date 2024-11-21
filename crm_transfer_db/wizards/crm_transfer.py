@@ -76,12 +76,12 @@ class CRMTransfer(models.TransientModel):
             category_ids.append(category.id)
         return category_ids
 
-    def _get_employees(self, employees):
+    def _get_employees(self, employees, create=True):
         """Busca las categorías por nombre, las crea si no existen y devuelve sus IDs."""
         employee_ids = []
         for employee_id in employees:
             employee = self._record_exists_by_name('hr.employee', employee_id)
-            if not employee:
+            if not employee and create:
                 employee = self.env['hr.employee'].sudo().create({'name': employee_id})
             employee_ids.append(employee.id)
         return employee_ids
@@ -595,10 +595,10 @@ class CRMTransfer(models.TransientModel):
                                               'hr.employee', 'search_read', [[['id', 'in', hr_leave_type['employee_ids']]]],
                                               {'fields': ['name']})
                 employee_names = [cat['name'] for cat in employee_ids] if employee_ids else []
-                employee_ids = self._get_employees(employee_names)
-                holiday_status_id = hr_leave_type['holiday_status_id'] and hr_leave_type['holiday_status_id'][
-                    1]  # Obtener el nombre del empleado
-                holiday_status = self._get_or_create_holiday_status_id(holiday_status_id) if holiday_status_id else False
+                employee_ids = self._get_employees(employee_names, False)
+            holiday_status_id = hr_leave_type['holiday_status_id'] and hr_leave_type['holiday_status_id'][
+                1]  # Obtener el nombre del empleado
+            holiday_status = self._get_or_create_holiday_status_id(holiday_status_id) if holiday_status_id else False
             vals = {
                 'name': hr_leave_type['name'],
                 'allocation_type': hr_leave_type['allocation_type'],
@@ -607,7 +607,7 @@ class CRMTransfer(models.TransientModel):
                 'number_of_days_display': hr_leave_type['number_of_days_display'],
                 'notes': hr_leave_type['notes'],
                 'holiday_type': hr_leave_type['holiday_type'],
-                'employee_ids': employee_ids if employee_ids else False,
+                'employee_ids':  [(6, 0, employee_ids)] if employee_ids else False,
                 'holiday_status_id': holiday_status.id if holiday_status else False,
 
             }
