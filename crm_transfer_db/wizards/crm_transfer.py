@@ -586,34 +586,29 @@ class CRMTransfer(models.TransientModel):
                                             'number_of_days_display',
                                             'notes',
                                             'holiday_type',
-                                            'employee_ids',
+                                            'employee_id',
                                         ]})
 
         for hr_leave_type in hr_leave_types:
-            if hr_leave_type['employee_ids']:
-                employee_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                              'hr.employee', 'search_read', [[['id', 'in', hr_leave_type['employee_ids']]]],
-                                              {'fields': ['name']})
-                employee_names = [cat['name'] for cat in employee_ids] if employee_ids else []
-                employee_ids = self._get_employees(employee_names, False)
-            holiday_status_id = hr_leave_type['holiday_status_id'] and hr_leave_type['holiday_status_id'][
-                1]  # Obtener el nombre del empleado
-            holiday_status = self._get_or_create_holiday_status_id(holiday_status_id) if holiday_status_id else False
-            vals = {
-                'name': hr_leave_type['name'],
-                'allocation_type': hr_leave_type['allocation_type'],
-                'date_from': hr_leave_type['date_from'],
-                'date_to': hr_leave_type['date_to'],
-                'number_of_days_display': hr_leave_type['number_of_days_display'],
-                'notes': hr_leave_type['notes'],
-                'holiday_type': hr_leave_type['holiday_type'],
-                'employee_ids':  [(6, 0, employee_ids)] if employee_ids else False,
-                'holiday_status_id': holiday_status.id if holiday_status else False,
+            # if hr_leave_type['employee_id']:
+            employee_id = self._get_or_create_many2one('hr.employee', hr_leave_type['employee_id']) if hr_leave_type['employee_id'] else False
+            holiday_status_id = self._get_or_create_many2one('hr.leave.type', hr_leave_type['holiday_status_id']) if hr_leave_type['holiday_status_id'] else False
+            if employee_id:
+                vals = {
+                    'name': hr_leave_type['name'],
+                    'allocation_type': hr_leave_type['allocation_type'],
+                    'date_from': hr_leave_type['date_from'],
+                    'date_to': hr_leave_type['date_to'],
+                    'number_of_days_display': hr_leave_type['number_of_days_display'],
+                    'notes': hr_leave_type['notes'],
+                    'holiday_type': hr_leave_type['holiday_type'],
+                    'employee_id':  employee_id.id if employee_id else False,
+                    'holiday_status_id': holiday_status_id.id if holiday_status_id else False,
 
-            }
-            print(vals)
-            _logger.info(vals)
-            self._insert_if_not_exists_by_name('hr.leave.allocation', hr_leave_type['name'], vals)
+                }
+                print(vals)
+                _logger.info(vals)
+                self._insert_direct('hr.leave.allocation', vals)
 
         return True
 
