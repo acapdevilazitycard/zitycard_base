@@ -592,7 +592,7 @@ class CRMTransfer(models.TransientModel):
         for hr_leave_type in hr_leave_types:
             if hr_leave_type['employee_ids']:
                 employee_ids = obj.execute_kw(self.source_db, uid, self.source_password,
-                                              'hr.employee', 'search_read', [[['id', 'in', hr_leave['employee_ids']]]],
+                                              'hr.employee', 'search_read', [[['id', 'in', hr_leave_type['employee_ids']]]],
                                               {'fields': ['name']})
                 employee_names = [cat['name'] for cat in employee_ids] if employee_ids else []
                 employee_ids = self._get_employees(employee_names)
