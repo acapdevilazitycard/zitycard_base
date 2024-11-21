@@ -50,6 +50,7 @@
                         </group>
                         <group>
                             <button string="Ausencias" type="object" name="transfer_data_hr_leave" class="btn-primary"/>
+                            <button string="Asignaciones" type="object" name="transfer_data_hr_leave_allocation" class="btn-primary"/>
                         </group>
                     </group>
                     <group string="Helpdesk">

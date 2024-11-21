@@ -1,4 +1,3 @@
-import base64
 import xmlrpc.client
 from odoo import models, fields, api
 
@@ -261,13 +260,6 @@ class CRMTransfer(models.TransientModel):
                                               'website', 'category_id', 'user_id', 'active', 'create_date',
                                               'write_date', 'vat', 'credit_limit', 'debit_limit', 'currency_id',
                                               'is_company', 'type', 'message_ids']})
-        # partners = obj.execute_kw(self.source_db, uid, self.source_password,
-        #                           'res.partner', 'read', [[7681, 7682, 7683, 9250]],
-        #                           {'fields': ['id', 'name', 'type', 'company_id', 'email', 'phone', 'street', 'street2',
-        #                                       'city', 'state_id', 'zip', 'country_id', 'function', 'comment',
-        #                                       'website', 'category_id', 'user_id', 'active', 'create_date',
-        #                                       'write_date', 'vat', 'credit_limit', 'debit_limit', 'currency_id',
-        #                                       'is_company', 'type', 'message_ids']})
 
         for partner in partners:
             # Buscar o crear el usuario asociado
@@ -327,9 +319,6 @@ class CRMTransfer(models.TransientModel):
         partners = obj.execute_kw(self.source_db, uid, self.source_password,
                                   'res.partner', 'read', [partner_ids],
                                   {'fields': ['id', 'name', 'parent_id']})
-        # partners = obj.execute_kw(self.source_db, uid, self.source_password,
-        #                           'res.partner', 'read', [[7682, 7683]],
-        #                           {'fields': ['id', 'name', 'parent_id']})
 
         for partner in partners:
             parent = obj.execute_kw(self.source_db, uid, self.source_password,
@@ -574,6 +563,57 @@ class CRMTransfer(models.TransientModel):
             print(vals)
             _logger.info(vals)
             self._insert_if_not_exists_by_name('hr.employee', employee['name'], vals)
+
+        return True
+
+    def transfer_data_hr_leave_allocation(self):
+        """Transferencia de registros de las asignaciones de ausencias (hr.leave.allocation) entre bases de datos."""
+        uid = self._get_uid()
+        _, obj = self._get_source_connection()
+
+        # Transferir registros de asistencia (hr.leave.allocation)
+        hr_leave_type_ids = obj.execute_kw(self.source_db, uid, self.source_password,
+                                           'hr.leave.allocation', 'search', [[]])
+        hr_leave_types = obj.execute_kw(self.source_db, uid, self.source_password,
+                                        'hr.leave.allocation', 'read', [hr_leave_type_ids],
+                                        {'fields': [
+                                            'id',
+                                            'name',
+                                            'holiday_status_id',
+                                            'allocation_type',
+                                            'date_from',
+                                            'date_to',
+                                            'number_of_days_display',
+                                            'notes',
+                                            'holiday_type',
+                                            'employee_ids',
+                                        ]})
+
+        for hr_leave_type in hr_leave_types:
+            if hr_leave_type['employee_ids']:
+                employee_ids = obj.execute_kw(self.source_db, uid, self.source_password,
+                                              'hr.employee', 'search_read', [[['id', 'in', hr_leave['employee_ids']]]],
+                                              {'fields': ['name']})
+                employee_names = [cat['name'] for cat in employee_ids] if employee_ids else []
+                employee_ids = self._get_employees(employee_names)
+                holiday_status_id = hr_leave_type['holiday_status_id'] and hr_leave_type['holiday_status_id'][
+                    1]  # Obtener el nombre del empleado
+                holiday_status = self._get_or_create_holiday_status_id(holiday_status_id) if holiday_status_id else False
+            vals = {
+                'name': hr_leave_type['name'],
+                'allocation_type': hr_leave_type['allocation_type'],
+                'date_from': hr_leave_type['date_from'],
+                'date_to': hr_leave_type['date_to'],
+                'number_of_days_display': hr_leave_type['number_of_days_display'],
+                'notes': hr_leave_type['notes'],
+                'holiday_type': hr_leave_type['holiday_type'],
+                'employee_ids': employee_ids if employee_ids else False,
+                'holiday_status_id': holiday_status.id if holiday_status else False,
+
+            }
+            print(vals)
+            _logger.info(vals)
+            self._insert_if_not_exists_by_name('hr.leave.allocation', hr_leave_type['name'], vals)
 
         return True
 
@@ -996,7 +1036,7 @@ class CRMTransfer(models.TransientModel):
         return True
 
     def transfer_data_product_templates(self):
-        """Transferencia de registros de tipos de ausencias (product.template) entre bases de datos."""
+        """Transferencia de registros de tipos de productos (product.template) entre bases de datos."""
         uid = self._get_uid()
         _, obj = self._get_source_connection()
 
@@ -1036,6 +1076,7 @@ class CRMTransfer(models.TransientModel):
         for product_template in product_template_ids:
             responsible_id = product_template['responsible_id'] and product_template['responsible_id'][1]
             responsible_id = self._get_or_create_user(responsible_id) if responsible_id else False
+
             uom_id = self._get_or_create_many2one('uom.uom', product_template['uom_id']) if product_template[
                 'uom_id'] else False
             uom_po_id = self._get_or_create_many2one('uom.uom', product_template['uom_po_id']) if product_template[
