@@ -33,14 +33,19 @@
         </t>
     </template>
     <template id="portal_my_home_documents_portal_user" name="Documentos de Contacto" customize_show="True"  inherit_id="portal.portal_my_home" priority="200">
-        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+            <t t-set="portal_alert_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="icon" t-value="'/documents/static/description/icon.svg'"/>
                 <t t-set="title">Documentos Usuario</t>
                 <t t-set="url" t-value="'/odoo/user_documents'"/>
                 <t t-set="text">Accede a tus documentos de usuario</t>
                 <t t-set="placeholder_count" t-value="'document_count'"/>
+                <t t-set="config_card" t-value="True"/>
             </t>
-        </xpath>
+        </div>
     </template>
 </odoo>
