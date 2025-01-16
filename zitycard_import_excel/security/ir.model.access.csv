@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_import_file,access.import.file,model_import_file,base.group_erp_manager,1,1,1,1
+access_column_mapping_import,access.column_mapping_import,model_column_mapping_import,base.group_erp_manager,1,1,1,1

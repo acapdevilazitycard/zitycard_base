@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="import_file_view_tree" model="ir.ui.view">
+        <field name="name">import.file.tree</field>
+        <field name="model">import.file</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="url_file"/>
+                <field name="model"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="import_file_view_form" model="ir.ui.view">
+        <field name="name">import.file</field>
+        <field name="model">import.file</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="rendered_records" invisible="1"/>
+                    <button name="action_open_records" type="object" string="VER REGISTROS" class="btn-primary" invisible="not rendered_records"/>
+                    <button name="import_file" type="object" string="IMPORTAR" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="url_file"/>
+                            <field name="model"/>
+                            <field name="active"/>
+                            <field name="order_by"/>
+                            <field name="start_number"/>
+                        </group>>
+                    </group>
+                    <group>
+                        <field name="column_mapping_ids">
+                            <list editable="bottom">
+                                <field name="name" required="True"/>
+                                <field name="field_name" required="active_import"/>
+                                <field name="field_type" required="active_import"/>
+                                <field name="model_field" required="field_type in ['many2one']"/>
+                                <field name="match_field"  required="field_type == 'many2one'"/>
+                                <field name="active_import"/>
+                            </list>
+                        </field>
+                    </group>
+                    <div>
+                        <h3>Definición de campos</h3>
+                        <ul>
+                            <li><strong>Nombre</strong>: Nombre de la importación</li>
+                            <li><strong>URL del archivo</strong>: Url del archivo Excel (xlsx). * Leer la nota para añadir correctamente una URL</li>
+                            <li><strong>Modelo</strong>: Modelo en el que se van a crear registros</li>
+                            <li><strong>Active</strong>: Si está activo, la acción planificada lo ejecutará</li>
+                            <li><strong>Ordenar por</strong>: Columna para ordenar el archivo antes de la importación (debe ser numérica)</li>
+                            <li><strong>Empezar el</strong>: Número de la columna "Ordenar por" a partir de la que se empezará a importar registros. Por defecto si termina en el número X, empezaria en en X+1</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>* Nota</h4>
+                        <strong>Para los archivos de docs.google, se debe modificar en enlace generado directamente desde Google:</strong><br/><br/>
+                        <strong>· Incorrecto (enlace creado directamente desde Google)</strong><br/>
+                        <span style="color: DarkCyan">https://docs.google.com/spreadsheets/d/1_aSsEyXXXXXX_QtocTReeD/</span><span style="color:red"><strong>edit?usp=drive_link&amp;ouid=432948102051286333524&amp;rtpof=true&amp;sd=true</strong></span><br/>
+                        <strong>· Correcto</strong><br/>
+                        <span style="color: DarkCyan">https://docs.google.com/spreadsheets/d/1_aSsEyXXXXXX_QtocTReeD/</span><span style="color:green"><strong>export?format=xlsx</strong></span><br/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_open_import_file" model="ir.actions.act_window">
+        <field name="name">Zitycard Importador Archivos</field>
+        <field name="res_model">import.file</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_import_file" parent="base.menu_administration" name="Zitycard Importador Archivos" action="action_open_import_file"/>
+</odoo>
